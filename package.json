@@ -1,0 +1,20 @@
+{
+  "name": "web-scraper",
+  "version": "1.0.0",
+  "description": "Scrapes t-shirt data",
+  "main": "scraper.js",
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "dateformat": "^2.0.0",
+    "json2csv": "^3.7.3",
+    "request": "^2.79.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.15.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sky Jacobson",
+  "license": "ISC"
+}
