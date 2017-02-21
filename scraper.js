@@ -62,8 +62,12 @@ function individualShirtRequest() {
 				shirt.time = dateFormat(now);
 				shirtsInfo.push(shirt);
 				// Create the csv file
+				var dir = "./data";
+				if (!fs.existsSync(dir)) {
+					fs.mkdirSync(dir);
+				}
 				var csv = json2csv({ data: shirtsInfo, fields: fields });
-				fs.writeFile(now + "file.csv", csv, function(error) { // Name of file will have date
+				fs.writeFile(dir + "/" + dateFormat(now, "isoDate") + ".csv", csv, function(error) { // Name of file will have date
 					if (error) throw error;
 					console.log("file saved");
 				});
