@@ -15,8 +15,11 @@ var errorHandler = function(error, url) {
 // Global variables (site and array of shirt objects)
 var shirtsInfo = [];
 var url = "http://shirts4mike.com/";
-var shirtURL = [];
 var fields = ["title", "price", "shirtURL", "imageURL", "time"];
+var shirtURL = [];
+var titles = [];
+var imageURLs = [];
+var prices = [];
 
 // Initial url request
 request(url, function(error, response, body) {
@@ -38,42 +41,53 @@ request(url, function(error, response, body) {
 	} else {
 		errorHandler(error, url);
 	}
-	
 });
 
+// Push t-shirt values into appropriate arrays
 function individualShirtRequest() {
 	for (var i = 0; i < shirtURL.length; i++) {
-		var shirtAddress = shirtURL[i];
 		request(shirtURL[i], function(error, response, body) { // request to each individual shirt
 			if(!error && response.statusCode == 200) {
 				var $ = cheerio.load(body);
-				// Create Shirt object to add to shirtsInfo
-				var shirt = {};
 				// Push title
-				shirt.title = $(".shirt-details h1").clone().children().remove().end().text();
+				titles.push($(".shirt-details h1").clone().children().remove().end().text());
 				// push price
-				shirt.price = $(".price").text();
-				// Push shirt url
-				shirt.shirtURL = shirtAddress;
+				prices.push($(".price").text());
 				// Push Image URL
-				shirt.imageURL = url + $(".shirt-picture img").attr("src");
-				// push time
-				var now = new Date();
-				shirt.time = dateFormat(now);
-				shirtsInfo.push(shirt);
-				// Create the csv file
-				var dir = "./data";
-				if (!fs.existsSync(dir)) {
-					fs.mkdirSync(dir);
-				}
-				var csv = json2csv({ data: shirtsInfo, fields: fields });
-				fs.writeFile(dir + "/" + dateFormat(now, "isoDate") + ".csv", csv, function(error) { // Name of file will have date
-					if (error) throw error;
-					console.log("file saved");
-				});
+				imageURLs.push(url + $(".shirt-picture img").attr("src"));
 			} else {
 				errorHandler(error, shirtURL[i]);
 			}
 		});
 	} // End of loop
+	// Create shirt Object
+	setTimeout(function(){ createShirtObject(); }, 5000);
 }
+
+var createShirtObject = function() {
+	for(var i = 0; i < shirtURL.length; i++) {
+		// Create Shirt object to add to shirtsInfo
+		var shirt = {};
+		shirt.title = titles[i];
+		shirt.price = prices[i];
+		shirt.shirtURL = shirtURL[i];
+		shirt.imageURL = imageURLs[i];
+		var now = new Date();
+		shirt.time = dateFormat(now);
+		shirtsInfo.push(shirt);
+	}
+	setTimeout(function(){ writeFile(now); }, 5000);
+};
+
+var writeFile = function(now) {
+	// Create the csv file
+	var dir = "./data";
+	if (!fs.existsSync(dir)) {
+		fs.mkdirSync(dir);
+	}
+	var csv = json2csv({ data: shirtsInfo, fields: fields });
+	fs.writeFile(dir + "/" + dateFormat(now, "isoDate") + ".csv", csv, function(error) { // Name of file will have date
+		if (error) throw error;
+		console.log("file saved");
+	});
+};
