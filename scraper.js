@@ -15,8 +15,9 @@ var errorHandler = function(error, url) {
 // Global variables (site and array of shirt objects)
 var shirtsInfo = [];
 var url = "http://shirts4mike.com/";
-var fields = ["title", "price", "shirtURL", "imageURL", "time"];
+var fields = ["Title", "Price", "URL", "ImageURL", "Time"];
 var shirtURL = [];
+var shirtURLCSV =[];
 var titles = [];
 var imageURLs = [];
 var prices = [];
@@ -55,6 +56,8 @@ function individualShirtRequest() {
 				prices.push($(".price").text());
 				// Push Image URL
 				imageURLs.push(url + $(".shirt-picture img").attr("src"));
+				// Shirt URL
+				shirtURLCSV.push(response.request.uri.href);
 			} else {
 				errorHandler(error, shirtURL[i]);
 			}
@@ -68,12 +71,12 @@ var createShirtObject = function() {
 	for(var i = 0; i < shirtURL.length; i++) {
 		// Create Shirt object to add to shirtsInfo
 		var shirt = {};
-		shirt.title = titles[i];
-		shirt.price = prices[i];
-		shirt.shirtURL = shirtURL[i];
-		shirt.imageURL = imageURLs[i];
+		shirt.Title = titles[i];
+		shirt.Price = prices[i];
+		shirt.URL = shirtURLCSV[i];
+		shirt.ImageURL = imageURLs[i];
 		var now = new Date();
-		shirt.time = dateFormat(now);
+		shirt.Time = dateFormat(now);
 		shirtsInfo.push(shirt);
 	}
 	setTimeout(function(){ writeFile(now); }, 5000);
